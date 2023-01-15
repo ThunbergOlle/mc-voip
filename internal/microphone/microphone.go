@@ -11,7 +11,7 @@ func Stream(output *[]int32, ready chan bool) {
 
 	portaudio.Initialize()
 	defer portaudio.Terminate()
-	in := make([]int32, 4096)
+	in := make([]int32, 8192)
 	stream, err := portaudio.OpenDefaultStream(1, 0, 44100, len(in), &in)
 	errorHandler.Panic(err)
 	defer stream.Close()

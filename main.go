@@ -2,35 +2,20 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/url"
 	"os"
 	"os/signal"
 
 	"github.com/ThunbergOlle/mc-voip/internal/microphone"
 	"github.com/ThunbergOlle/mc-voip/pkg/errorHandler"
+	"github.com/ThunbergOlle/mc-voip/pkg/socketio"
 	"github.com/gordonklaus/portaudio"
-	"github.com/gorilla/websocket"
 )
 
 func main() {
 	fmt.Println("Hello, World!")
-	u := url.URL{Scheme: "ws", Host: "localhost:3000", Path: "/socket.io/?EIO=4&transport=websocket"}
 
-	connection, resp, err := websocket.DefaultDialer.Dial(u.String(), nil)
-	if err != nil {
-		log.Printf("handshake failed with status %d", resp.StatusCode)
-		log.Fatal("dial:", err)
-	}
-	//When the program closes close the connection
-	defer connection.Close()
-	// send socketio connect message
-	err = connection.WriteMessage(websocket.TextMessage, []byte("40"))
-	if err != nil {
-		log.Fatal("write:", err)
-	}
-
-	log.Printf("NewClient success\n")
+	_, err := socketio.NewClient("localhost:3000")
+	errorHandler.Panic(err)
 
 	killSig := make(chan os.Signal, 1)
 	signal.Notify(killSig, os.Interrupt, os.Kill)
